@@ -1,27 +1,18 @@
-# Use a specific base image version
-FROM ubuntu:22.04
+FROM ubuntu
 
-# Set environment variables to avoid interactive prompts during package install
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies and Python
-RUN apt-get update && \
-    apt-get install -y python3 python3-pip python3-venv python3-dev build-essential && \
-    apt-get clean
+COPY requirements.txt /app/
+COPY devops /app/
 
-# Copy application code
-COPY . /app/
+RUN apt-get update && apt-get install -y python3 python3-pip python3-venv
 
-# Install Python dependencies
-RUN pip3 install --upgrade pip && \
-    pip3 install -r requirements.txt
+SHELL ["/bin/bash", "-c"]
 
-# Expose port (for documentation; not strictly required)
+RUN python3 -m venv venv1 && \
+source venv1/bin/activate && \
+pip install --no-cache-dir -r requirements.txt
+
 EXPOSE 8000
 
-# Set entry point and default command
-ENTRYPOINT ["python3", "manage.py"]
-CMD ["runserver", "0.0.0.0:8000"]
+CMD source venv1/bin/activate && python3 manage.py runserver 0.0.0.0:8000

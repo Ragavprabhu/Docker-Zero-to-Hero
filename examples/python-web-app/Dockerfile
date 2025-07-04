@@ -1,18 +1,17 @@
-FROM ubuntu
+# Use official Python image
+FROM python:3.10-slim
 
+# Set working directory
 WORKDIR /app
 
-COPY requirements.txt /app/
-COPY devops /app/
+# Copy files
+COPY . /app
 
-RUN apt-get update && apt-get install -y python3 python3-pip python3-venv
+# Install dependencies
+RUN pip install flask
 
-SHELL ["/bin/bash", "-c"]
-
-RUN python3 -m venv venv1 && \
-source venv1/bin/activate && \
-pip install --no-cache-dir -r requirements.txt
-
+# Expose port 8000
 EXPOSE 8000
 
-CMD source venv1/bin/activate && python3 manage.py runserver 0.0.0.0:8000
+# Run the app
+CMD ["python", "app.py"]
